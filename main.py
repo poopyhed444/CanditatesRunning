@@ -1,6 +1,10 @@
 import requests
-# from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup
 import json
+from twitter_scraper import search_tweets
+
+
+
 address = input("give me your address")
 parts = address.split(" ")
 state = input("give me your state/city")
@@ -44,16 +48,25 @@ formatted_headers2 = {
     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36'
 }
 
-
 response = requests.get(url2, headers=formatted_headers2)
 data = json.loads(response.text)
-
+print("Here are your candidates for your area")
 candidates = []
 if 'elections' in data['data']:
     for election in data['data']['elections']:
-        for district in election['districts']:
-            if 'races' not in district:
+        for district in election.get('districts', []):
+            if district['races'] == None:
                 continue
             for race in district['races']:
                 for candidate in race['candidates']:
-                    print(candidate['person']['name'])
+                    candidates.append(candidate['person']['name'])
+
+for candidate_name in candidates:
+    profile_urls = search_tweets(candidate_name)
+    if profile_urls:
+        print(f"Profiles for {candidate_name}:")
+        for url in profile_urls:
+            print(url)
+        print("---\n")
+    else:
+        print(f"No profiles found for {candidate_name}.\n")
