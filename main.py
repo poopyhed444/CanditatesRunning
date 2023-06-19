@@ -14,7 +14,6 @@ async def process_candidates(candidates):
         tasks.append(task)
     await asyncio.gather(*tasks)
 
-
 def get_candidates(address, state):
     parts = address.split(" ")
     url1 = "https://api4.ballotpedia.org/geocode?location=" + parts[0] + "%20" + parts[1] + "%20" + parts[2] + "%20" + state
@@ -84,5 +83,5 @@ if __name__ == "__main__":
 
     candidates = get_candidates(address, state)
     if candidates:
-        print("Here are your candidates for your area:")
+        print("Here are your candidates for your area (This may take a while due to rate limitations): " )
         asyncio.run(process_candidates(candidates))
